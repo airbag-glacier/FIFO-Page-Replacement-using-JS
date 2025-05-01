@@ -20,13 +20,19 @@
             max-width: 800px;
             margin: auto;
         }
-        input[type=number] {
-            width: 60px;
+        input[type=number], input[type=text] {
             padding: 5px;
             background-color: #333;
             color: #fff;
             border: 1px solid #555;
             border-radius: 5px;
+            margin: 5px 0;
+        }
+        input[type=number] {
+            width: 60px;
+        }
+        input[type=text] {
+            width: 100%;
         }
         button {
             padding: 10px 15px;
@@ -76,9 +82,15 @@
     <div class="container">
         <h2>FIFO Page Replacement Algorithm</h2>
         <label for="frames">Enter number of page frames (3 to 5): </label>
-        <input type="number" id="frames" min="3" max="5" value="3">
-        <button onclick="initializeFIFO()">Generate Reference String</button>
+        <input type="number" id="frames" min="3" max="5" value="3"><br>
+
+        <label for="customString">Enter reference string (comma-separated, e.g., 1,2,3,4):</label>
+        <input type="text" id="customString" placeholder="Leave blank to use random string">
+
+        <button onclick="initializeFIFO(true)">Use Random String</button>
+        <button onclick="initializeFIFO(false)">Use Custom String</button>
         <button onclick="nextStepFIFO()">Next Step</button>
+        <button onclick="clearReferenceString()">Clear Reference String</button>
 
         <div class="result">
             <div class="reference-string"></div>
@@ -108,14 +120,28 @@
             return ref;
         }
 
-        function initializeFIFO() {
+        function initializeFIFO(useRandom) {
             numFrames = parseInt(document.getElementById("frames").value);
             if (numFrames < 3 || numFrames > 5) {
                 alert("Number of page frames must be between 3 and 5.");
                 return;
             }
 
-            refString = generateReferenceString();
+            if (useRandom) {
+                refString = generateReferenceString();
+            } else {
+                const input = document.getElementById("customString").value.trim();
+                if (!input) {
+                    alert("Please enter a custom reference string or choose to generate one.");
+                    return;
+                }
+                refString = input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n >= 0 && n <= 9);
+                if (refString.length === 0) {
+                    alert("Invalid input. Please enter numbers between 0 and 9, separated by commas.");
+                    return;
+                }
+            }
+
             frames = [];
             pageFaults = 0;
             currentStep = 0;
@@ -165,6 +191,19 @@
 
             document.querySelector(".page-faults").innerHTML = `<strong>Total Page Faults:</strong> ${pageFaults}`;
             currentStep++;
+        }
+
+        function clearReferenceString() {
+            refString = [];
+            frames = [];
+            pageFaults = 0;
+            currentStep = 0;
+            document.getElementById("customString").value = '';
+            document.querySelector(".reference-string").innerHTML = '';
+            document.querySelector(".frames").innerHTML = '';
+            document.querySelector(".page-faults").innerHTML = '';
+            document.querySelector("#fifoTable thead").innerHTML = '';
+            document.querySelector("#fifoTable tbody").innerHTML = '';
         }
     </script>
 </body>
