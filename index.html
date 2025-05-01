@@ -109,6 +109,7 @@
                 <button onclick="initializeFIFO(true)">Use Random String</button>
                 <button onclick="initializeFIFO(false)">Use Custom String</button>
                 <button onclick="nextStepFIFO()">Next Step</button>
+                <button onclick="clearReferenceString()">Clear</button>
             </div>
         </div>
     </div>
@@ -135,6 +136,7 @@
         let pageFaults = 0;
         let currentStep = 0;
 
+        // Function to generate a random reference string of given length using digits 0–9
         function generateReferenceString(length = 20) {
             const ref = [];
             for (let i = 0; i < length; i++) {
@@ -143,13 +145,17 @@
             return ref;
         }
 
+        // Function to initialize the FIFO simulation either with random or custom input
         function initializeFIFO(useRandom) {
             numFrames = parseInt(document.getElementById("frames").value);
+
+            // Ensure frame count is between 3 and 5
             if (numFrames < 3 || numFrames > 5) {
                 alert("Number of page frames must be between 3 and 5.");
                 return;
             }
 
+            // Use random string or parse user input
             if (useRandom) {
                 refString = generateReferenceString();
             } else {
@@ -165,20 +171,24 @@
                 }
             }
 
+            // Reset all tracking variables
             frames = [];
             pageFaults = 0;
             currentStep = 0;
 
+            // Update display with current reference string and frame count
             document.querySelector(".reference-string").innerHTML = `<strong>Reference String:</strong> ${refString.join(", ")}`;
             document.querySelector(".frames").innerHTML = `<strong>Number of Page Frames:</strong> ${numFrames}`;
             document.querySelector(".page-faults").innerHTML = `<strong>Total Page Faults:</strong> ${pageFaults}`;
 
+            // Initialize the table header and clear previous results
             const thead = document.querySelector("#fifoTable thead");
             const tbody = document.querySelector("#fifoTable tbody");
             thead.innerHTML = `<tr><th>Step</th><th>Page</th>${Array.from({length: numFrames}, (_, i) => `<th>Frame ${i+1}</th>`).join('')}<th>Status</th><th>Replaced</th></tr>`;
             tbody.innerHTML = '';
         }
 
+        // Function to process the next step of the FIFO simulation
         function nextStepFIFO() {
             if (currentStep >= refString.length) {
                 alert("All steps completed.");
@@ -189,18 +199,21 @@
             let replacedPage = null;
             let status = 'hit';
 
+            // If the page is not in memory, it's a fault
             if (!frames.includes(page)) {
                 if (frames.length >= numFrames) {
-                    replacedPage = frames[0];
+                    replacedPage = frames[0]; // The first inserted (oldest) page is removed
                     frames.shift();
                 }
-                frames.push(page);
+                frames.push(page); // Add new page
                 pageFaults++;
                 status = 'fault';
             }
 
+            // Take snapshot of current frame state
             const snapshot = Array.from({length: numFrames}, (_, j) => frames[j] !== undefined ? frames[j] : '');
 
+            // Create a table row for this step
             const row = document.createElement("tr");
             row.className = status;
             row.innerHTML = `
@@ -212,8 +225,23 @@
             `;
             document.querySelector("#fifoTable tbody").appendChild(row);
 
+            // Update fault count display
             document.querySelector(".page-faults").innerHTML = `<strong>Total Page Faults:</strong> ${pageFaults}`;
             currentStep++;
+        }
+
+        // Function to reset everything including table and input fields
+        function clearReferenceString() {
+            refString = [];
+            frames = [];
+            pageFaults = 0;
+            currentStep = 0;
+            document.getElementById("customString").value = '';
+            document.querySelector(".reference-string").innerHTML = '';
+            document.querySelector(".frames").innerHTML = '';
+            document.querySelector(".page-faults").innerHTML = '';
+            document.querySelector("#fifoTable thead").innerHTML = '';
+            document.querySelector("#fifoTable tbody").innerHTML = '';
         }
     </script>
 </body>
