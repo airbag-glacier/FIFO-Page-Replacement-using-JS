@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <title>FIFO Page Replacement</title>
     <style>
         body {
@@ -142,8 +142,9 @@
         let frames = [];
         let pageFaults = 0;
         let currentStep = 0;
+        //initialization of necesarry variables
 
-        // Function to generate a random reference string of given length using digits 0–9
+        //generate a random reference string of given length using digits 0–9
         function generateReferenceString(length = 20) {
             const ref = [];
             for (let i = 0; i < length; i++) {
@@ -152,11 +153,11 @@
             return ref;
         }
 
-        // Function that initializes the FIFO simulation either with random or custom input
+        //initializes the FIFO simulation either with random or custom input
         function initializeFIFO(useRandom) {
             numFrames = parseInt(document.getElementById("frames").value);
 
-            // Make sure frame count is between 3 and 5
+            // condition if frame count is between 3 and 5
             if (numFrames < 3 || numFrames > 5) {
                 alert("Number of page frames must be between 3 and 5.");
                 return;
@@ -178,12 +179,12 @@
                 }
             }
 
-            // Reset all tracking variables
+            // reset all index variables and frame array
             frames = [];
             pageFaults = 0;
             currentStep = 0;
 
-            // Update display with current reference string and frame count
+            // inserts current reference string and frame count
             document.querySelector(".reference-string").innerHTML = `<strong>Reference String:</strong> ${refString.join(", ")}`;
             document.querySelector(".frames").innerHTML = `<strong>Number of Page Frames:</strong> ${numFrames}`;
             document.querySelector(".page-faults").innerHTML = `<strong>Total Page Faults:</strong> ${pageFaults}`;
@@ -195,7 +196,7 @@
             tbody.innerHTML = '';
         }
 
-        // Function to process the next step of the FIFO simulation
+        // process the next step of the FIFO simulation
         function nextStepFIFO() {
             if (currentStep >= refString.length) {
                 alert("All steps completed.");
@@ -217,10 +218,11 @@
                 status = 'fault';
             }
 
-            // Take snapshot of current frame state
+            // snapshot of current frame state
+            //in this case, snapshot is a shallow copy of the current array
             const snapshot = Array.from({length: numFrames}, (_, j) => frames[j] !== undefined ? frames[j] : '');
 
-            // Create a table row for this step
+            // Create a table row for each step as the button is clicked
             const row = document.createElement("tr");
             row.className = status;
             row.innerHTML = `
@@ -232,12 +234,12 @@
             `;
             document.querySelector("#fifoTable tbody").appendChild(row);
 
-            // Update fault count display
+            // update fault count 
             document.querySelector(".page-faults").innerHTML = `<strong>Total Page Faults:</strong> ${pageFaults}`;
             currentStep++;
         }
 
-        // Function to reset everything including table and input fields
+        // reset everything including table and input fields
         function clearReferenceString() {
             refString = [];
             frames = [];
@@ -249,6 +251,7 @@
             document.querySelector(".page-faults").innerHTML = '';
             document.querySelector("#fifoTable thead").innerHTML = '';
             document.querySelector("#fifoTable tbody").innerHTML = '';
+            // referencing elements to convert their values to blank
         }
     </script>
 </body>
